@@ -7,16 +7,16 @@ export class Component {
         this._root = null;
         this._range = null;
     }
-    setAttribute(name, value){
+    setAttribute(name, value) {
         this.props[name] = value;
     }
-    appendChild(component){
+    appendChild(component) {
         this.children.push(component);
     }
     get vdom() {
         return this.render().vdom;
     }
-    [RENDER_TO_DOM](range){
+    [RENDER_TO_DOM](range) {
         this._range = range;
         this._vdom = this.vdom;
         this._vdom[RENDER_TO_DOM](range);
@@ -39,7 +39,7 @@ export class Component {
             if(newNode.type === "#text" && newNode.content !== oldNode.content)
                 return false;
 
-            return true
+            return true;
         }
         let update = (oldNode, newNode) => {
             // type, props, children
@@ -48,7 +48,7 @@ export class Component {
                 newNode[RENDER_TO_DOM](oldNode._range);
                 return;
             }
-            newNode._range = oldNode._range
+            newNode._range = oldNode._range;
 
             let newChildren = newNode.vchildren;
             let oldChildren = oldNode.vchildren;
@@ -73,31 +73,20 @@ export class Component {
                 }
             }
         }
-        let vdom = this.vdom
-        update(this._vdom, vdom)
-        this._vdom = vdom
+        let vdom = this.vdom;
+        update(this._vdom, vdom);
+        this._vdom = vdom;
     }
-    /* rerender(){
-        let oldRange = this._range;
-
-        let range = document.createRange();
-        range.setStart(oldRange.startContainer, oldRange.startOffset);
-        range.setEnd(oldRange.startContainer, oldRange.startOffset);
-        this[RENDER_TO_DOM](range);
-
-        oldRange.setStart(range.endContainer, range.endOffset);
-        oldRange.deleteContents();
-    } */
-    setState(newState){
-        if(this.state === null || typeof this.state !== "object"){
+    setState(newState) {
+        if(this.state === null || typeof this.state !== "object") {
             this.state = newState;
             this.update();
             return;
         }
 
         let merge = (oldState, newState) => {
-            for(let p in newState){
-                if(oldState[p] === null || typeof oldState[p] !== "object"){
+            for(let p in newState) {
+                if(oldState[p] === null || typeof oldState[p] !== "object") {
                     oldState[p] = newState[p];
                 } else {
                     merge(oldState[p], newState[p]);
@@ -115,38 +104,21 @@ class ElementWrapper extends Component {
         super(type);
         this.type = type;
     }
-    // setAttribute(name, value){
-    //     if(name.match(/^on([\s\S]+)$/)){
-    //         this.root.addEventListener(RegExp.$1.replace(/^[\s\S]/, c => c.toLowerCase()), value);
-    //     } else {
-    //         if(name === "className"){
-    //             this.root.setAttribute("class", value)
-    //         } else {
-    //             this.root.setAttribute(name, value);
-    //         }
-    //     }
-    // }
-    // appendChild(component){
-    //     let range = document.createRange();
-    //     range.setStart(this.root, this.root.childNodes.length);
-    //     range.setEnd(this.root, this.root.childNodes.length);
-    //     component[RENDER_TO_DOM](range);
-    // }
     get vdom() {
         this.vchildren = this.children.map(child => child.vdom);
         return this;
     }
-    [RENDER_TO_DOM](range){
+    [RENDER_TO_DOM](range) {
         this._range = range;
 
         let root = document.createElement(this.type);
 
         for(let name in this.props) {
             let value = this.props[name]
-            if(name.match(/^on([\s\S]+)$/)){
+            if(name.match(/^on([\s\S]+)$/)) {
                 root.addEventListener(RegExp.$1.replace(/^[\s\S]/, c => c.toLowerCase()), value);
             } else {
-                if(name === "className"){
+                if(name === "className") {
                     root.setAttribute("class", value);
                 } else {
                     root.setAttribute(name, value);
@@ -177,7 +149,7 @@ class TextWrapper extends Component {
     get vdom() {
         return this;
     }
-    [RENDER_TO_DOM](range){
+    [RENDER_TO_DOM](range) {
         this._range = range;
 
         let root = document.createTextNode(this.content);
